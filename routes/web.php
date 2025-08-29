@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CheckInventoryController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\UserController;
@@ -107,33 +108,40 @@ Route::middleware(['auth'])
                 Route::get('generateQR', [TransactionController::class, 'generateQrCode'])->name('generate');
             });
 
-            Route::prefix('product')->name('product.')->group(function () {
-                Route::get('export1', [ProductController::class, 'export1'])->name('export1');
-                Route::get('productFilter', [ProductController::class, 'productFilter'])->name('productFilter');
-                Route::get('', [ProductController::class, 'index'])->name('store');
-                Route::get('import', [ProductController::class, 'formimport'])->name('formimport');
-                Route::post('import', [ProductController::class, 'import'])->name('import');
-                Route::get('export', [ProductController::class, 'export'])->name('export');
-                Route::get('add', [ProductController::class, 'addForm'])->name('addForm');
-                Route::post('add', [ProductController::class, 'addSubmit'])->name('add');
-                Route::get('{id}', [ProductController::class, 'editForm'])->name('edit');
-                Route::post('{id}', [ProductController::class, 'update'])->name('update');
-                Route::delete('/delete/{id}', [ProductController::class, 'delete'])->name('delete');
-                Route::get('product-images/{id}', [ProductController::class, 'deleteImagesProduct'])->name('deleteImagesProduct');
-                Route::post('product-category', [ProductController::class, 'Changecategory'])->name('changecategory');
-                Route::post('product-status', [ProductController::class, 'Changestatus'])->name('changestatus');
-            });
+            Route::prefix('products')
+                ->controller(ProductController::class)
+                ->name('products.')
+                ->group(function () {
+                    Route::get('/',  'index')->name('index');
+                    Route::get('create',  'create')->name('create');
+                    Route::post('/',  'store')->name('store');
+                    Route::get('{id}/edit',  'edit')->name('edit');
+                    Route::put('{id}',  'update')->name('update');
+                    Route::post('import',  'import')->name('import');
+                    Route::get('export',  'export')->name('export');
+                });
 
-            Route::prefix('company')->name('company.')->group(function () {
-                Route::get("/", [CompanyController::class, 'index'])->name('index');
-                Route::get('findByName', [CompanyController::class, 'findByName'])->name('findByName');
-                Route::get('/add', [CompanyController::class, 'add'])->name('add');
-                Route::post('/store', [CompanyController::class, 'store'])->name('store');
-                Route::get('detail/{id}', [CompanyController::class, 'edit'])->name('detail');
-                Route::post('update/{id}', [CompanyController::class, 'update'])->name('update');
-                Route::delete('delete/{id}', [CompanyController::class, 'delete'])->name('delete');
-                Route::get('filter', [CompanyController::class, 'companyFilter'])->name('filter');
-            });
+            Route::prefix('users')
+                ->controller(UserController::class)
+                ->name('users.')
+                ->group(function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('create', 'create')->name('create');
+                    Route::post('/', 'store')->name('store');
+                    Route::get('{id}/edit', 'edit')->name('edit');
+                    Route::put('{id}', 'update')->name('update');
+                });
+
+            Route::prefix('company')
+                ->controller(CompanyController::class)
+                ->name('company.')
+                ->group(function () {
+                    Route::get("/",  'index')->name('index');
+                    Route::get('create',  'create')->name('create');
+                    Route::post('/',  'store')->name('store');
+                    Route::get('{id}/edit',  'edit')->name('edit');
+                    Route::put('{id}',  'update')->name('update');
+                });
 
             Route::prefix('profit')->name('profit.')->group(function () {
                 Route::get('', [ReportController::class, 'profitIndex'])->name('index');
@@ -144,8 +152,8 @@ Route::middleware(['auth'])
             Route::get('/dashboard/day', [DashboardController::class, 'StatisticsByDay'])->name('dashboard.day');
             Route::get('/dashboard/month', [DashboardController::class, 'StatisticsByMonth'])->name('dashboard.month');
             Route::get('/dashboard/year', [DashboardController::class, 'StatisticsByYear'])->name('dashboard.year');
-            Route::get('/detail/{id}', [AdminController::class, 'getAdminInfor'])->name('detail');
-            Route::post('/update/{id}', [AdminController::class, 'updateAdminInfor'])->name('update');
+            Route::get('profile', [AdminController::class, 'profile'])->name('profile');
+            Route::post('profile', [AdminController::class, 'updateProfile'])->name('update');
             Route::post('/changePassword', [AdminController::class, 'changePassword'])->name('changePassword');
 
             Route::prefix('category')
@@ -159,16 +167,16 @@ Route::middleware(['auth'])
                     Route::delete('delete/{id}',  'destroy')->name('destroy');
                 });
 
-            Route::prefix('user')->name('staff.')->group(function () {
-                Route::get('', [UserController::class, 'index'])->name('store');
-                Route::get('update/{id}', [UserController::class, 'edit'])->name('edit');
-                Route::post('update/{id}', [UserController::class, 'update'])->name('update');
-                Route::get('add', [UserController::class, 'addForm'])->name('addForm');
-                Route::post('add', [UserController::class, 'add'])->name('add');
-                Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
-                Route::post('updateAdmin/{id}', [UserController::class, 'updateadmin'])->name('updateAdmin');
-                Route::get('search/phone', [UserController::class, 'findByPhone'])->name('findByPhone');
-            });
+            Route::prefix('employees')
+                ->controller(EmployeeController::class)
+                ->name('employees.')
+                ->group(function () {
+                    Route::get('/',  'index')->name('index');
+                    Route::get('create',  'create')->name('create');
+                    Route::post('/',  'store')->name('store');
+                    Route::get('{id}/edit',  'edit')->name('edit');
+                    Route::put('{id}',  'update')->name('update');
+                });
 
             Route::prefix('branchs')
                 ->controller(BranchController::class)
@@ -219,10 +227,13 @@ Route::middleware(['auth'])
                 Route::get('/detail/{id}', [OrderController::class, 'detail'])->name('detail');
             });
 
-            Route::prefix('config')->name('config.')->group(function () {
-                Route::get('/detail', [ConfigController::class, 'index'])->name('detail');
-                Route::post('/update', [ConfigController::class, 'updateConfig'])->name('update');
-            });
+            Route::prefix('config')
+                ->controller(ConfigController::class)
+                ->name('config.')
+                ->group(function () {
+                    Route::get('/',  'index')->name('form');
+                    Route::post('/',  'save')->name('save');
+                });
 
 
             Route::prefix('support')->name('support.')->group(function () {
@@ -331,6 +342,7 @@ Route::middleware(['auth'])
                     Route::get('/', 'index')->name('index');
                     Route::delete('destroy', 'destroy')->name('destroy');
                 });
+
             Route::prefix('accounts')
                 ->controller(AccountController::class)
                 ->name('accounts.')
@@ -368,7 +380,7 @@ Route::middleware(['auth'])
     });
 
 // bán hàng
-Route::middleware([CheckLogin::class, 'role:2'])->prefix('ban-hang')->name('staff.')->group(function () {
+Route::middleware([CheckLogin::class, 'role:3'])->prefix('ban-hang')->name('staff.')->group(function () {
     Route::get('product/search', [StaffProductController::class, 'search'])->name('product.search');
     Route::get('get-clients', [StaffProductController::class, 'getClients']);
     Route::get('', [StaffProductController::class, 'index'])->name('index');
